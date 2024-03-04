@@ -8,33 +8,28 @@ namespace WaveFileManipulatorTests
 {
     [TestClass]
     public class ManipulatorTests
-    {                
+    {
+        private const string FilePath = @"C:\file.wav";
+
         [TestMethod]
         public void Run()
         {
-            //var filePath = @"C:\Users\David'\Desktop\WavFiles\PinkPanther60.wav";
-            //var filePath = @"C:\Users\David'\Desktop\WavFiles\taunt.wav";
-            var filePath = @"C:\Users\David'\Desktop\WavFiles\out.wav";
-            //var filePath = @"C:\Users\David'\Desktop\WavFiles\10MG.wav";
-            //var filePath = @"C:\Users\David'\Desktop\WavFiles\Ensoniq-ESQ-1-Xplore-C3.wav";
-            //var filePath = @"C:\Users\David'\Desktop\WavFiles\StarWars60.wav";
-            //var filePath = @"C:\Users\David'\Desktop\WavFiles\gettysburg10.wav";
-            //var filePath = @"C:\Users\David'\Desktop\WavFiles\a2002011001-e02.wav";
-            //var filePath = @"C:\Users\David'\Desktop\WavFiles\16BitPCM\Backwards.wav";
+            var filePath = @"C:\file.wav";
             var manipulator = new Manipulator(filePath);
-            var reversedByteArray = manipulator.Reverse();
+            //var reversedByteArray = manipulator.Reverse();
+            var decreasedVolumeByteArray = manipulator.IncreaseVolume(0.5);
             
             var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
             var fileDirectoryPath = Path.GetDirectoryName(filePath);
-            var outputFilePath = Path.Combine(fileDirectoryPath, fileNameWithoutExtension + "Reversed.wav");
-            WriteReversedWavFileByteArrayToFile(reversedByteArray, outputFilePath);
+            var outputFilePath = Path.Combine(fileDirectoryPath, fileNameWithoutExtension + "Modified.wav");
+            WriteWavFileByteArrayToFile(decreasedVolumeByteArray, outputFilePath);
         }
 
         [TestMethod]
         public void ReversedFileIsSameSizeAsOriginal()
         {
             //Arrange
-            var manipulator = new Manipulator(@"C:\Users\David'\Desktop\WavFiles\16BitPCM\Short.wav");
+            var manipulator = new Manipulator(FilePath);
             var expectedByteArray = new byte[35992];
 
             //Act
@@ -143,7 +138,7 @@ namespace WaveFileManipulatorTests
             Assert.AreEqual(0, reversedByteArray.Length);
         }
 
-        private static void WriteReversedWavFileByteArrayToFile(byte[] reversedWavFileStreamByteArray, string reversedWavFilePath)
+        private static void WriteWavFileByteArrayToFile(byte[] reversedWavFileStreamByteArray, string reversedWavFilePath)
         {
             using FileStream reversedFileStream = new FileStream(reversedWavFilePath, FileMode.Create, FileAccess.Write, FileShare.Write);
             reversedFileStream.Write(reversedWavFileStreamByteArray, 0, reversedWavFileStreamByteArray.Length);

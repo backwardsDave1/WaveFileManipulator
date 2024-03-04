@@ -49,9 +49,22 @@ namespace WaveFileManipulator
         }
 
         public byte[] Reverse()
-        {            
+        {
+            // TODO: Considering moving Reverse() and IncreaseVolume() into a "Functions" class, instead of individual classes for each function.
             var reversedSamples = _reverser.Reverse(Metadata, _forwardsArrayWithOnlyHeaders, _forwardsArrayWithOnlyAudioData);            
             return reversedSamples;
+        }
+
+        public byte[] IncreaseVolume(double factor)
+        {
+            // Perceived volume is logarithmic. Increasing the volume by a factor of 10, only doubles the perceived volume.
+            var exponent = factor - 1;
+            var factorAsLogarithm = Math.Pow(10, exponent);
+
+            // TODO: Deal with overflows. Might have to use Byte.MaxValue. Research how to remove distortions.
+            // TODO: Use consistent abstractions (look at Reverse()).
+            var samplesWithIncreasedVolume = _forwardsArrayWithOnlyAudioData.Select(x => (byte)(x * factorAsLogarithm)).ToArray();
+            return _forwardsArrayWithOnlyHeaders.Combine(samplesWithIncreasedVolume);
         }
 
         private byte[] CreateForwardsArrayWithOnlyHeaders(byte[] forwardsWavFileStreamByteArray, int startIndexOfDataChunk)
